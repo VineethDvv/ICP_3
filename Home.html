@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <style>
+        body {
+            background-image: url("image4.jpg");
+
+        }
+        <!-- Set the Background Image  -->
+
+    </style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<H1 align="center"> Make Your Food Calories Count</H1>
+
+<div  ng-app="icp3" ng-controller="ctrl">
+    <!-- AngularJS application is defines by ng-app="icp3"  -->
+    <!-- ng-controller="ctrl" attribute is an AngularJS directive. It defines a controller -->
+
+    Enter the dish name:  <input type="text"  ng-model="dishName"/>
+    <button align="center"  align="center" id="btn" ng-click="showCalories()"> Show Calories</button>
+
+    <br/><br>
+    Dish Calories        :  {{dishCalo}}
+    <br/><br>
+    Dish Weight in grms  : {{dishWeight}}
+
+    <div align="center" id="Audio"></div>
+
+</div>
+        <script>
+            var app = angular.module("icp3",[]);
+             app.controller("ctrl", function($scope, $http){
+                 <!-- AngularJS will invoke the controller with a $scope object. -->
+                    $scope.visible = false;
+                    $scope.showCalories = function(){
+                        $scope.visible = true;
+                        <!-- Setting the scope visibility -->
+                        $http.get("https://api.nutritionix.com/v1_1/search/" + $scope.dishName +"?results=0:1&fields=*&appId=178a04bf&appKey=cbd3add187e6abac5f1f5273f41c3cf1").then(
+                            function(data){
+                                console.log(data);
+                                <!--extracting the data from nutritionx api -->
+
+                                $scope.dishCalo = data.data.hits[0].fields.nf_calories;
+                                $scope.dishWeight = data.data.hits[0].fields.nf_serving_weight_grams;
+
+                                <!-- Retriving the calories and weight fields -->
+
+
+                                var audioSource = 'https://stream.watsonplatform.net/text-to-speech/api/v1/synthesize?username=b15e9ee3-239d-44ae-bb09-4604fdd730ec&password=uouKDeIwA3c5&text='+ $scope.dishName;
+
+                                document.getElementById("Audio").innerHTML= "<audio controls='' autoplay='' name='media'><source src='"+audioSource+"' type='audio/ogg'></audio>";
+                                <!-- Audio file that will automatically start playing after the button is clicked -->
+
+                            });
+                    }
+                });
+
+        </script>
+
+</body>
+</html>
